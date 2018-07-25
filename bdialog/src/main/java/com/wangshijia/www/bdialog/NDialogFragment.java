@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -91,7 +92,7 @@ public class NDialogFragment extends DialogFragment {
         }
     }
 
-    public NDialogFragment show(@NonNull AppCompatActivity activity) {
+    public NDialogFragment show(@NonNull FragmentActivity activity) {
         FragmentManager fragmentManager = activity.getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
         Fragment prev = fragmentManager.findFragmentByTag("dialog");
@@ -119,7 +120,7 @@ public class NDialogFragment extends DialogFragment {
     }
 
 
-    public static class MessageDialogBuilder extends BaseDialogBuilder {
+    public static class MessageBaseDialogBuilder<T extends BaseDialogBuilder> extends BaseDialogBuilder<T> {
 
         /**
          * 标题默认文字大小
@@ -132,10 +133,10 @@ public class NDialogFragment extends DialogFragment {
 
         private int contentTextGravity = Gravity.LEFT;
 
-        protected ActionListener positiveListener;
 
 
-        public MessageDialogBuilder(AppCompatActivity activity) {
+
+        public MessageBaseDialogBuilder(AppCompatActivity activity) {
             super(activity);
             init(activity);
         }
@@ -184,45 +185,91 @@ public class NDialogFragment extends DialogFragment {
             return view;
         }
 
-        public MessageDialogBuilder setContentTextColor(@ColorRes int contentTextColor) {
+        public T setContentTextColor(@ColorRes int contentTextColor) {
             this.contentTextColor = ContextCompat.getColor(context, contentTextColor);
-            return this;
+            return (T) this;
         }
 
         private boolean hasTitle() {
             return title != null && !title.isEmpty();
         }
 
-        public MessageDialogBuilder setTitle(String title) {
+        public T setTitle(String title) {
             this.title = title;
-            return this;
+            return (T) this;
         }
 
-        public MessageDialogBuilder setContentText(String text) {
+        public T setContentText(String text) {
             this.contentText = text;
-            return this;
+            return (T) this;
         }
 
-        public MessageDialogBuilder setContentTextSize(int contentTextSize) {
+        public T setContentTextSize(int contentTextSize) {
             this.contentTextSize = contentTextSize;
-            return this;
+            return (T) this;
         }
 
 
-        public MessageDialogBuilder setTitleTextSize(int titleTextSize) {
+        public T setTitleTextSize(int titleTextSize) {
             this.titleTextSize = titleTextSize;
-            return this;
+            return (T) this;
         }
 
 
-        public MessageDialogBuilder setContentTextGravity(int contentTextGravity) {
+        public T setContentTextGravity(int contentTextGravity) {
             this.contentTextGravity = contentTextGravity;
-            return this;
+            return (T) this;
         }
 
-        public MessageDialogBuilder addConfirmBtnClickListener(ActionListener confirmClick){
+
+    }
+
+    public static class MessageDialogBuilder extends MessageBaseDialogBuilder<MessageDialogBuilder>{
+
+        public MessageDialogBuilder(AppCompatActivity activity) {
+            super(activity);
+        }
+    }
+
+    public static class ConfirmDialogBuilder extends MessageBaseDialogBuilder<ConfirmDialogBuilder> {
+
+        private ActionListener positiveListener;
+        public ConfirmDialogBuilder(AppCompatActivity activity) {
+            super(activity);
+            setActionHeight(40);
+        }
+
+        @Override
+        protected void beforeCreateAction() {
+            super.beforeCreateAction();
+            int[][] states = new int[2][];
+            states[0] = new int[]{android.R.attr.state_pressed};
+            states[1] = new int[]{};
+            int[] negativeColors = new int[]{0xfff5f5f5, 0xff8997A5};
+            ColorStateList negativeColorList = new ColorStateList(states, negativeColors);
+            Drawable negativeDrawable = context.getDrawable(R.drawable.selector_confirm_negative);
+            addAction("取消", negativeColorList, negativeDrawable, new ActionListener() {
+                @Override
+                public void onClick(NDialogFragment dialogFragment) {
+                    dialogFragment.dismiss();
+                }
+            });
+            int[] positiveColors = new int[]{0xffffffff, 0xffffffff};
+            ColorStateList positiveColorList = new ColorStateList(states, positiveColors);
+            Drawable positiveDrawable = context.getDrawable(R.drawable.selector_confirm_positive);
+            addAction("确认", positiveColorList, positiveDrawable, new ActionListener() {
+                @Override
+                public void onClick(NDialogFragment dialogFragment) {
+                    if (positiveListener != null) {
+                        positiveListener.onClick(dialogFragment);
+                    }
+                }
+            });
+        }
+
+        public ConfirmDialogBuilder addConfirmBtnClickListener(ActionListener confirmClick){
             this.positiveListener = confirmClick;
-            return this;
+            return  this;
         }
     }
 
@@ -274,43 +321,6 @@ public class NDialogFragment extends DialogFragment {
             contentArea.addView(progressBar);
         }
     }
-
-    public static class ConfirmDialogBuilder extends MessageDialogBuilder {
-
-        public ConfirmDialogBuilder(AppCompatActivity activity) {
-            super(activity);
-            setActionHeight(40);
-        }
-
-        @Override
-        protected void beforeCreateAction() {
-            super.beforeCreateAction();
-            int[][] states = new int[2][];
-            states[0] = new int[]{android.R.attr.state_pressed};
-            states[1] = new int[]{};
-            int[] negativeColors = new int[]{0xfff5f5f5, 0xff8997A5};
-            ColorStateList negativeColorList = new ColorStateList(states, negativeColors);
-            Drawable negativeDrawable = context.getDrawable(R.drawable.selector_confirm_negative);
-            addAction("取消", negativeColorList, negativeDrawable, new ActionListener() {
-                @Override
-                public void onClick(NDialogFragment dialogFragment) {
-                    dialogFragment.dismiss();
-                }
-            });
-            int[] positiveColors = new int[]{0xffffffff, 0xffffffff};
-            ColorStateList positiveColorList = new ColorStateList(states, positiveColors);
-            Drawable positiveDrawable = context.getDrawable(R.drawable.selector_confirm_positive);
-            addAction("确认", positiveColorList, positiveDrawable, new ActionListener() {
-                @Override
-                public void onClick(NDialogFragment dialogFragment) {
-                    if (positiveListener != null) {
-                        positiveListener.onClick(dialogFragment);
-                    }
-                }
-            });
-        }
-    }
-
     public interface ActionListener {
         void onClick(NDialogFragment dialogFragment);
     }

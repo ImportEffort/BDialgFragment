@@ -6,7 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IntDef;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.FragmentActivity;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,9 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 
-public abstract class BaseDialogBuilder {
-
-
+public abstract class BaseDialogBuilder<T extends BaseDialogBuilder> {
 
     public void setShowActionBtn(boolean showActionBtn) {
         this.showActionBtn = showActionBtn;
@@ -42,12 +40,11 @@ public abstract class BaseDialogBuilder {
 
     public static final int LEFT = 0;
     public static final int RIGHT = 1;
-    public static final int CENTER = 2;
     public static final int HORIZONTAL = 0;
     public static final int VERTICAL = 1;
 
     private NDialogFragment dialogFragment;
-    protected AppCompatActivity context;
+    protected FragmentActivity context;
 
     protected View contentView;
 
@@ -72,7 +69,7 @@ public abstract class BaseDialogBuilder {
     private boolean cancelable = true;
     private boolean canceledOnTouchOutside = true;
 
-    public BaseDialogBuilder(AppCompatActivity activity) {
+    public BaseDialogBuilder(FragmentActivity activity) {
         this.context = activity;
     }
 
@@ -172,26 +169,26 @@ public abstract class BaseDialogBuilder {
         return space;
     }
 
-    public BaseDialogBuilder addAction(String text, int width, int height, @ColorRes int textColor, @DrawableRes int backgroundRes, NDialogFragment.ActionListener listener) {
+    public T addAction(String text, int width, int height, @ColorRes int textColor, @DrawableRes int backgroundRes, NDialogFragment.ActionListener listener) {
         Drawable drawable = context.getDrawable(backgroundRes);
         ColorStateList colorStateList = context.getResources().getColorStateList(textColor);
         addAction(text, width, height, colorStateList, drawable, listener);
-        return this;
+        return (T) this;
     }
 
-    public BaseDialogBuilder addAction(String text, @ColorRes int textColor, @DrawableRes int backgroundRes, NDialogFragment.ActionListener listener) {
+    public T addAction(String text, @ColorRes int textColor, @DrawableRes int backgroundRes, NDialogFragment.ActionListener listener) {
         addAction(text, actionWidth, actionHeight, textColor, backgroundRes, listener);
-        return this;
+        return (T) this;
     }
 
 
 
-    public BaseDialogBuilder addAction(String text, ColorStateList colorStateList, Drawable drawabls, NDialogFragment.ActionListener listener) {
+    public T addAction(String text, ColorStateList colorStateList, Drawable drawabls, NDialogFragment.ActionListener listener) {
         addAction(text, actionWidth, actionHeight, colorStateList, drawabls, listener);
-        return this;
+        return (T) this;
     }
 
-    private BaseDialogBuilder addAction(String text, int width, int height, ColorStateList colorStateList, Drawable drawable, NDialogFragment.ActionListener listener) {
+    private T addAction(String text, int width, int height, ColorStateList colorStateList, Drawable drawable, NDialogFragment.ActionListener listener) {
         Button button = new Button(context);
         button.setBackground(drawable);
         button.setTextColor(colorStateList);
@@ -210,7 +207,7 @@ public abstract class BaseDialogBuilder {
             }
         });
         actions.add(button);
-        return this;
+        return (T) this;
     }
 
     public void show() {
@@ -233,43 +230,43 @@ public abstract class BaseDialogBuilder {
      * @param contentView
      * @return
      */
-    public BaseDialogBuilder setContentView(View contentView) {
+    public T setContentView(View contentView) {
         this.contentView = contentView;
-        return this;
+        return (T) this;
     }
 
-    public BaseDialogBuilder setMaxHeight(int height) {
+    public T setMaxHeight(int height) {
         int pxHeight = UIDisplayHelper.dp2px(context, height);
         int contentAreaMaxHeight = getContentAreaMaxHeight();
         if (pxHeight > contentAreaMaxHeight) {
             pxHeight = contentAreaMaxHeight;
         }
         this.height = pxHeight;
-        return this;
+        return (T) this;
     }
 
-    public BaseDialogBuilder setMaxWidth(int width) {
+    public T setMaxWidth(int width) {
         int dpWidth = UIDisplayHelper.dp2px(context, width);
         int screenWidth = UIDisplayHelper.getScreenWidth(context);
         if (dpWidth > screenWidth) {
             width = UIDisplayHelper.getScreenWidth(context);
         }
         this.width = UIDisplayHelper.dp2px(context, width);
-        return this;
+        return (T) this;
     }
 
-    public BaseDialogBuilder setCancelable(boolean cancelable) {
+    public T setCancelable(boolean cancelable) {
         this.cancelable = cancelable;
-        return this;
+        return (T) this;
     }
 
     public boolean isCancelable() {
         return cancelable;
     }
 
-    public BaseDialogBuilder setCanceledOnTouchOutside(boolean canceledOnTouchOutside) {
+    public T setCanceledOnTouchOutside(boolean canceledOnTouchOutside) {
         this.canceledOnTouchOutside = canceledOnTouchOutside;
-        return this;
+        return (T) this;
     }
 
     public boolean isCanceledOnTouchOutside() {
@@ -278,31 +275,31 @@ public abstract class BaseDialogBuilder {
 
     /**
      * @param actionHeight dp 值
-     * @return BaseDialogBuilder
+     * @return T
      */
-    public BaseDialogBuilder setActionHeight(int actionHeight) {
+    public T setActionHeight(int actionHeight) {
         this.actionHeight = actionHeight;
-        return this;
+        return (T) this;
     }
 
     /**
      * @param actionWidth dp 值
-     * @return BaseDialogBuilder
+     * @return T
      */
-    public BaseDialogBuilder setActionWidth(int actionWidth) {
+    public T setActionWidth(int actionWidth) {
         this.actionWidth = actionWidth;
-        return this;
+        return (T) this;
     }
 
-    public BaseDialogBuilder setActionGravity(@ActionGravity int actionGravity) {
+    public T setActionGravity(@ActionGravity int actionGravity) {
         this.actionGravity = actionGravity;
-        return this;
+        return (T) this;
     }
 
 
-    public BaseDialogBuilder setContentOrientation(@ContentOrientation int contentOrientation) {
+    public T setContentOrientation(@ContentOrientation int contentOrientation) {
         this.contentOrientation = contentOrientation;
-        return this;
+        return (T) this;
     }
 
     public int getContentOrientation() {
