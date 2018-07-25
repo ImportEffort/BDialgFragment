@@ -2,11 +2,13 @@ package com.wangshijia.www.bdialog;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IntDef;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,10 +25,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 
 public abstract class BaseDialogBuilder<T extends BaseDialogBuilder> {
-
-    public void setShowActionBtn(boolean showActionBtn) {
-        this.showActionBtn = showActionBtn;
-    }
 
     @IntDef({LEFT, RIGHT})
     @Retention(RetentionPolicy.SOURCE)
@@ -46,6 +44,8 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder> {
     private NDialogFragment dialogFragment;
     protected FragmentActivity context;
 
+    protected Typeface titleStyle = Typeface.DEFAULT;
+    protected int titleTextColor = -1;
     protected View contentView;
 
     protected int height = -1;
@@ -58,7 +58,7 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder> {
     private int actionWidth = -2;
     private int actionHeight = -2;
     private int actionGravity = Gravity.END;
-
+    private int actionTextSize = 16;
 
     /**
      * 内容区域LinearLayout 布局方向 ContentOrientation 可选
@@ -170,7 +170,7 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder> {
     }
 
     public T addAction(String text, int width, int height, @ColorRes int textColor, @DrawableRes int backgroundRes, NDialogFragment.ActionListener listener) {
-        Drawable drawable = context.getDrawable(backgroundRes);
+        Drawable drawable = context.getResources().getDrawable(backgroundRes);
         ColorStateList colorStateList = context.getResources().getColorStateList(textColor);
         addAction(text, width, height, colorStateList, drawable, listener);
         return (T) this;
@@ -182,21 +182,20 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder> {
     }
 
 
-
     public T addAction(String text, ColorStateList colorStateList, Drawable drawabls, NDialogFragment.ActionListener listener) {
         addAction(text, actionWidth, actionHeight, colorStateList, drawabls, listener);
         return (T) this;
     }
 
     private T addAction(String text, int width, int height, ColorStateList colorStateList, Drawable drawable, NDialogFragment.ActionListener listener) {
-        Button button = new Button(context);
+        Button button = new Button(context, null, R.attr.borderlessButtonStyle);
         button.setBackground(drawable);
         button.setTextColor(colorStateList);
         button.setText(text);
+        button.setTextSize(actionTextSize);
 
         this.actionWidth = width;
         this.actionHeight = height;
-
         button.setEnabled(true);
         button.setClickable(true);
 
@@ -304,5 +303,32 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder> {
 
     public int getContentOrientation() {
         return contentOrientation;
+    }
+
+    public T setAcitonTextSize(int textSize) {
+        this.actionTextSize = textSize;
+        return (T) this;
+    }
+
+
+    public T setShowActionBtn(boolean showActionBtn) {
+        this.showActionBtn = showActionBtn;
+        return (T) this;
+    }
+
+    public T setShowTopCloseBtn(boolean showTopCloseImage) {
+        this.showTopCloseImage = showTopCloseImage;
+        return (T) this;
+    }
+
+
+    public T setTitleStyle(Typeface titleStyle) {
+        this.titleStyle = titleStyle;
+        return (T) this;
+    }
+
+    public T setTitleTextColor(@ColorRes int titleTextColor) {
+        this.titleTextColor = ContextCompat.getColor(context, titleTextColor);
+        return (T) this;
     }
 }

@@ -2,6 +2,7 @@ package com.wangshijia.www.bdialog;
 
 import android.app.Dialog;
 import android.content.res.ColorStateList;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
@@ -125,15 +126,13 @@ public class NDialogFragment extends DialogFragment {
         /**
          * 标题默认文字大小
          */
-        private int contentTextSize = 14;
-        private int contentTextColor;
+        protected int contentTextSize = 14;
+        protected int contentTextColor;
         private int titleTextSize = 18;
-        private String contentText;
+        protected CharSequence contentText;
         private String title;
 
         private int contentTextGravity = Gravity.LEFT;
-
-
 
 
         public MessageBaseDialogBuilder(AppCompatActivity activity) {
@@ -143,6 +142,7 @@ public class NDialogFragment extends DialogFragment {
 
         private void init(AppCompatActivity activity) {
             contentTextColor = ContextCompat.getColor(activity, R.color.dialog_content);
+            titleTextColor = ContextCompat.getColor(activity, R.color.dialog_title);
         }
 
         @Override
@@ -150,6 +150,8 @@ public class NDialogFragment extends DialogFragment {
             if (hasTitle()) {
                 titleView.setText(title);
                 titleView.setTextSize(titleTextSize);
+                titleView.setTypeface(titleStyle);
+                titleView.setTextColor(titleTextColor);
                 titleView.setVisibility(View.VISIBLE);
             } else {
                 titleView.setVisibility(View.GONE);
@@ -178,7 +180,7 @@ public class NDialogFragment extends DialogFragment {
             view.setTextSize(contentTextSize);
             view.setTextColor(contentTextColor);
             view.setGravity(contentTextGravity);
-
+            view.setLineSpacing(0, 1.2f);
             if (!TextUtils.isEmpty(contentText)) {
                 view.setText(contentText);
             }
@@ -199,7 +201,7 @@ public class NDialogFragment extends DialogFragment {
             return (T) this;
         }
 
-        public T setContentText(String text) {
+        public T setContentText(CharSequence text) {
             this.contentText = text;
             return (T) this;
         }
@@ -224,16 +226,25 @@ public class NDialogFragment extends DialogFragment {
 
     }
 
-    public static class MessageDialogBuilder extends MessageBaseDialogBuilder<MessageDialogBuilder>{
+    public static class MessageDialogBuilder extends MessageBaseDialogBuilder<MessageDialogBuilder> {
 
         public MessageDialogBuilder(AppCompatActivity activity) {
             super(activity);
+            initAttr();
+        }
+
+        private void initAttr() {
+            setTitleTextSize(18);
+            setTitleStyle(Typeface.DEFAULT_BOLD);
+            setTitleTextColor(R.color.dialog_title);
+            setMaxWidth(270);
         }
     }
 
     public static class ConfirmDialogBuilder extends MessageBaseDialogBuilder<ConfirmDialogBuilder> {
 
         private ActionListener positiveListener;
+
         public ConfirmDialogBuilder(AppCompatActivity activity) {
             super(activity);
             setActionHeight(40);
@@ -247,7 +258,7 @@ public class NDialogFragment extends DialogFragment {
             states[1] = new int[]{};
             int[] negativeColors = new int[]{0xfff5f5f5, 0xff8997A5};
             ColorStateList negativeColorList = new ColorStateList(states, negativeColors);
-            Drawable negativeDrawable = context.getDrawable(R.drawable.selector_confirm_negative);
+            Drawable negativeDrawable = context.getResources().getDrawable(R.drawable.selector_confirm_negative);
             addAction("取消", negativeColorList, negativeDrawable, new ActionListener() {
                 @Override
                 public void onClick(NDialogFragment dialogFragment) {
@@ -256,7 +267,7 @@ public class NDialogFragment extends DialogFragment {
             });
             int[] positiveColors = new int[]{0xffffffff, 0xffffffff};
             ColorStateList positiveColorList = new ColorStateList(states, positiveColors);
-            Drawable positiveDrawable = context.getDrawable(R.drawable.selector_confirm_positive);
+            Drawable positiveDrawable = context.getResources().getDrawable(R.drawable.selector_confirm_positive);
             addAction("确认", positiveColorList, positiveDrawable, new ActionListener() {
                 @Override
                 public void onClick(NDialogFragment dialogFragment) {
@@ -267,9 +278,9 @@ public class NDialogFragment extends DialogFragment {
             });
         }
 
-        public ConfirmDialogBuilder addConfirmBtnClickListener(ActionListener confirmClick){
+        public ConfirmDialogBuilder addConfirmBtnClickListener(ActionListener confirmClick) {
             this.positiveListener = confirmClick;
-            return  this;
+            return this;
         }
     }
 
@@ -321,6 +332,7 @@ public class NDialogFragment extends DialogFragment {
             contentArea.addView(progressBar);
         }
     }
+
     public interface ActionListener {
         void onClick(NDialogFragment dialogFragment);
     }
