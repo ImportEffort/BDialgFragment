@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">BDialgFragment</string>
+    <string name="long_text">机构抢筹：该股净机构席位数大于3家\n\n机构鼎立：该股净机构席位数等于3家\n\n机构出击：该股净机构席位数为2家\n\n机构独秀：该股有1家机构席位买入，且位于买一\n\n机构分歧：买入的机构席位数=卖出的机构席位数\n\n明星席买：该股有明星席位介入，且为净买入\n\n机构出货：该股净卖机构席位数大于等于2</string>
+</resources>
