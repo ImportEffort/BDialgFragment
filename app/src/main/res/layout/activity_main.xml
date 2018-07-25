@@ -28,4 +28,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="ProgressV"/>
+
+    <Button
+        android:textAllCaps="false"
+        android:id="@+id/confirmDialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ConfirmDialog"/>
 </LinearLayout>

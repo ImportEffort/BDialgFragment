@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="transparent">#00000000</color>
+    <color name="dialog_transparent">#00000000</color>
 
     <color name="dialog_title">#2a4159</color>
     <color name="dialog_content">#8997A5</color>
+
+    <color name="dialog_confirm_negative_p">#7F8997A5</color>
+    <color name="dialog_confirm_negative_stroke_p">#8997A5</color>
+    <color name="dialog_confirm_negative">#FFFFFF</color>
+    <color name="dialog_confirm_negative_stroke">#2A4159</color>
+    <color name="dialog_confirm__positive_p">#c42323</color>
+    <color name="dialog_confirm__positive">#ff4c51</color>
 
 </resources>
