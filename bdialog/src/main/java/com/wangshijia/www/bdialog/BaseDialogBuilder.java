@@ -24,6 +24,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 
+/***
+ * 所有 dialogBuilder 的基类，这里用来定义公共属性
+ * @param <T> 子类Dialog的对象 用来return this 的时候强转
+ * @author wangshijia 编辑于 2018/7/25
+ */
 public abstract class BaseDialogBuilder<T extends BaseDialogBuilder> {
 
     @IntDef({LEFT, RIGHT})
@@ -44,14 +49,16 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder> {
     private NDialogFragment dialogFragment;
     protected FragmentActivity context;
 
-    protected Typeface titleStyle = Typeface.DEFAULT;
-    protected int titleTextColor = -1;
-    protected View contentView;
 
     protected int height = -1;
     protected int width = -1;
     private boolean showTopCloseImage = false;
     private boolean showActionBtn = true;
+
+
+    protected Typeface titleStyle = Typeface.DEFAULT;
+    protected int titleTextColor = -1;
+
     /**
      * 底部按钮大小
      */
@@ -73,13 +80,6 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder> {
         this.context = activity;
     }
 
-    protected int getContentAreaMaxHeight() {
-        if (height == -1) {
-            // 屏幕高度的0.85 - 预估的 title 和 action 高度
-            return (int) (UIDisplayHelper.getScreenHeight(context) * 0.85) - UIDisplayHelper.dp2px(context, 100);
-        }
-        return height;
-    }
 
     public NDialogFragment create() {
         dialogFragment = new NDialogFragment();
@@ -223,16 +223,6 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder> {
 
     protected abstract void onCreateContent(LinearLayout contentArea);
 
-    /**
-     * 自定义文本内容部分，因为有的文本内容可能样式复杂
-     *
-     * @param contentView
-     * @return
-     */
-    public T setContentView(View contentView) {
-        this.contentView = contentView;
-        return (T) this;
-    }
 
     public T setMaxHeight(int height) {
         int pxHeight = UIDisplayHelper.dp2px(context, height);
@@ -242,6 +232,16 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder> {
         }
         this.height = pxHeight;
         return (T) this;
+    }
+
+    /**
+     *  @return 预估 Dialog 最大高度  屏幕高度的0.85 - 预估的 title 和 action 高度
+     */
+    protected int getContentAreaMaxHeight() {
+        if (height == -1) {
+            return (int) (UIDisplayHelper.getScreenHeight(context) * 0.85) - UIDisplayHelper.dp2px(context, 100);
+        }
+        return height;
     }
 
     public T setMaxWidth(int width) {
@@ -309,7 +309,6 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder> {
         this.actionTextSize = textSize;
         return (T) this;
     }
-
 
     public T setShowActionBtn(boolean showActionBtn) {
         this.showActionBtn = showActionBtn;

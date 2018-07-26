@@ -31,7 +31,6 @@ import com.wangshijia.www.bdialog.util.UIDisplayHelper;
 
 public class NDialogFragment extends DialogFragment {
 
-
     private boolean canceledOnTouchOutside;
 
     public NDialogFragment() {
@@ -93,6 +92,11 @@ public class NDialogFragment extends DialogFragment {
         }
     }
 
+    /**
+     *  google 建议的 show方法书写，可以防止 dialog 重复弹出
+     * @param activity
+     * @return
+     */
     public NDialogFragment show(@NonNull FragmentActivity activity) {
         FragmentManager fragmentManager = activity.getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
@@ -122,6 +126,11 @@ public class NDialogFragment extends DialogFragment {
 
 
     public static class MessageBaseDialogBuilder<T extends BaseDialogBuilder> extends BaseDialogBuilder<T> {
+        /**
+         * 中间控件的 View 如果自定义了contentView 可以的调用
+         * @see  MessageBaseDialogBuilder#setContentView(View contentView)
+         */
+        protected View contentView;
 
         /**
          * 标题默认文字大小
@@ -157,6 +166,18 @@ public class NDialogFragment extends DialogFragment {
                 titleView.setVisibility(View.GONE);
             }
         }
+
+        /**
+         * 自定义文本内容部分，因为有的文本内容可能样式复杂
+         *
+         * @param contentView
+         * @return
+         */
+        public T setContentView(View contentView) {
+            this.contentView = contentView;
+            return (T) this;
+        }
+
 
         @Override
         protected void onCreateContent(LinearLayout contentArea) {
@@ -333,7 +354,13 @@ public class NDialogFragment extends DialogFragment {
         }
     }
 
+    /***
+     * 事件监听
+     */
     public interface ActionListener {
+        /**
+         * @param dialogFragment 当前展示的 Fragment
+         */
         void onClick(NDialogFragment dialogFragment);
     }
 }
